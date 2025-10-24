@@ -1,0 +1,19 @@
+/* src/App.css */
+:root { color-scheme: dark light; }
+body { margin:0; font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,'Fira Sans','Droid Sans','Helvetica Neue',sans-serif; }
+.wrap { min-height:100vh; background:#0f1115; color:#e6e6e6; display:flex; flex-direction:column; align-items:center; padding:28px 16px; }
+.title { font-size:34px; margin:0 0 8px; }
+.sub { opacity:.85; margin-bottom:20px; }
+.row { display:flex; gap:10px; margin:10px 0 16px; flex-wrap:wrap; justify-content:center; }
+.btn { background:#61dafb; color:#0f1115; border:none; border-radius:10px; padding:10px 14px; font-weight:700; cursor:pointer; }
+.btn:hover { background:#21a1f1; }
+.area { width:min(1100px,95%); background:#161923; border:1px solid #2a2f3a; border-radius:12px; padding:12px; }
+textarea { width:100%; height:120px; background:transparent; color:#e6e6e6; border:none; outline:none; resize:vertical; }
+.prompt { width:min(1100px,95%); line-height:1.7; font-size:26px; background:#0f1115; border:1px solid #2a2f3a; border-radius:14px; padding:22px; margin-top:10px; }
+.before { opacity:.45; }
+.now { background:linear-gradient(0deg, rgba(255,230,0,.35), rgba(255,230,0,.35)); color:#fff; border-radius:6px; padding:0 4px; }
+.after { opacity:.9; }
+.progress { width:min(1100px,95%); height:6px; background:#222838; border-radius:999px; overflow:hidden; margin:10px 0 8px; }
+.bar { height:100%; background:#61dafb; width:0%; transition:width .12s ease; }
+ul { width:min(1100px,95%); text-align:left; line-height:1.6; }
+.hint { font-size:12px; opacity:.75; }
