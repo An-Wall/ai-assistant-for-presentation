@@ -1,40 +1,41 @@
 /**
  * LLM API 클라이언트
- * OpenAI API를 사용합니다.
- * 환경 변수: OPENAI_API_KEY
+ * Google Gemini API를 사용합니다.
+ * 환경 변수: GEMINI_API_KEY
  */
 
-interface OpenAIMessage {
-  role: 'system' | 'user' | 'assistant';
-  content: string;
+interface GeminiContent {
+  role: 'user' | 'model';
+  parts: Array<{ text: string }>;
 }
 
-interface OpenAIRequest {
-  model: string;
-  messages: OpenAIMessage[];
-  temperature?: number;
-  max_tokens?: number;
+interface GeminiRequest {
+  contents: GeminiContent[];
+  generationConfig?: {
+    temperature?: number;
+    maxOutputTokens?: number;
+  };
 }
 
-interface OpenAIResponse {
-  choices: Array<{
-    message: {
-      content: string;
+interface GeminiResponse {
+  candidates: Array<{
+    content: {
+      parts: Array<{ text: string }>;
     };
   }>;
 }
 
 /**
- * OpenAI API를 호출하여 누락된 부분을 재구성합니다.
+ * Google Gemini API를 호출하여 누락된 부분을 재구성합니다.
  */
 export async function regenerateWithLLM(
   fullScript: string,
   spokenText: string,
   skippedParts: string[]
 ): Promise<string> {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    throw new Error('OPENAI_API_KEY is not set');
+    throw new Error('GEMINI_API_KEY is not set');
   }
 
   const prompt = `당신은 프레젠테이션 원고를 작성하는 전문가입니다.
@@ -55,39 +56,38 @@ ${skippedParts.join('\n')}
 
 재구성된 원고만 출력하고, 다른 설명은 하지 마세요.`;
 
-  const request: OpenAIRequest = {
-    model: 'gpt-4o-mini',
-    messages: [
-      {
-        role: 'system',
-        content: '당신은 프레젠테이션 원고 작성 전문가입니다. 자연스럽고 논리적인 원고를 작성해주세요.',
-      },
+  const request: GeminiRequest = {
+    contents: [
       {
         role: 'user',
-        content: prompt,
+        parts: [{ text: prompt }],
       },
     ],
-    temperature: 0.7,
-    max_tokens: 2000,
+    generationConfig: {
+      temperature: 0.7,
+      maxOutputTokens: 2000,
+    },
   };
 
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify(request),
-    });
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(request),
+      }
+    );
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(`OpenAI API error: ${error.error?.message || 'Unknown error'}`);
+      throw new Error(`Gemini API error: ${error.error?.message || 'Unknown error'}`);
     }
 
-    const data: OpenAIResponse = await response.json();
-    return data.choices[0]?.message?.content || '';
+    const data: GeminiResponse = await response.json();
+    return data.candidates[0]?.content?.parts[0]?.text || '';
   } catch (error) {
     console.error('LLM regeneration error:', error);
     throw error;

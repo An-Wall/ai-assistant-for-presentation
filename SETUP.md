@@ -36,13 +36,13 @@ npm run install-all
 
 ### 2. 환경변수 설정
 
-`.env.local` 파일을 루트에 생성하고 다음을 추가:
+`.env.local` 니일을 루트에 생성하고 다음을 추가:
 
 ```env
-OPENAI_API_KEY=sk-your-api-key-here
+GEMINI_API_KEY=your-gemini-api-key-here
 ```
 
-> OpenAI API 키는 https://platform.openai.com/api-keys 에서 발급받으세요
+> Gemini API 키는 https://aistudio.google.com/app/apikey 에서 발급받으세요
 
 ### 3. 로컬 개발
 
@@ -112,7 +112,7 @@ vercel login
 
 Vercel 대시보드에서 프로젝트 설정 → Environment Variables:
 
-- `OPENAI_API_KEY`: OpenAI API 키
+- `GEMINI_API_KEY`: Gemini API 키
 
 ### 3. 배포
 
@@ -181,9 +181,9 @@ function MyComponent() {
    vercel deploy --prod
    ```
 
-2. **OpenAI API 키 설정**
+2. **Gemini API 키 설정**
    - Vercel 프로젝트 Settings → Environment Variables
-   - `OPENAI_API_KEY` 추가
+   - `GEMINI_API_KEY` 추가
 
 3. **실시간 테스트**
    - Live Prompter 화면에서 음성 인식 시작
