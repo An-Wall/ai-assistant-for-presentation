@@ -171,7 +171,7 @@ export default function App() {
   };
 
   return (
-    <main>
+
     <div className="h-screen flex flex-col bg-background overflow-hidden">
       {/* Screen Navigation Section - Fixed */}
       <div className="h-12 border-b border-border bg-background flex items-center justify-between px-4 flex-shrink-0">
@@ -216,6 +216,6 @@ export default function App() {
         toasts={toasts}
         onDismiss={dismissToast}
       />
-    </div><LivePrompter /></main>
+    </div>
   );
 }
