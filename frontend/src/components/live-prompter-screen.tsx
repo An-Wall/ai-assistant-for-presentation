@@ -1,7 +1,8 @@
-import { useState, useEffect,useRef} from "react";
+import { useState, useEffect,useRef, useCallback} from "react";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
 import { Mic } from "lucide-react";
+import { useApiClient } from "../hooks/useApiClient";
 import {
   Play,
   Pause,
@@ -74,9 +75,11 @@ export function LivePrompterScreen({
   scrollSpeed, 
   onFontSizeChange 
 }: LivePrompterScreenProps)  {
+  const { compareSpeech, isLoading: apiLoading } = useApiClient();
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [isInverted, setIsInverted] = useState(false);
+  const [lastTranscript, setLastTranscript] = useState("");
   
   // Real-time dashboard metrics
   const [timeDelta, setTimeDelta] = useState(0); // in seconds, + means ahead, - means behind
@@ -165,7 +168,7 @@ export function LivePrompterScreen({
     };
 
     // [핵심] 음성 인식 결과 처리
-    recognition.onresult = (event) => {
+    recognition.onresult = async (event) => {
       let interimTranscript = "";
       let finalTranscript = "";
 
@@ -178,20 +181,38 @@ export function LivePrompterScreen({
       }
       
       const transcript = (finalTranscript || interimTranscript).trim();
-      if (transcript === "") return;
+      if (transcript === "" || transcript === lastTranscript) return;
 
-      const spokenWords = transcript.split(" ");
-      const lastSpokenWord = spokenWords[spokenWords.length - 1];
+      setLastTranscript(transcript);
 
-      // 현재 단어 인덱스부터 스크립트에서 마지막으로 말한 단어 찾기
-      const searchArea = allWords.slice(currentWordIndex, currentWordIndex + 20);
-      const foundIndex = searchArea.findIndex(word => 
-        word.replace(/[.,!?]/g, '') === lastSpokenWord.replace(/[.,!?]/g, '')
-      );
+      // 전체 원고 텍스트 구성
+      const fullScript = scriptParagraphs.map(p => p.text).join(" ");
 
-      if (foundIndex !== -1) {
-        // 단어를 찾았다면 currentWordIndex 업데이트
-        setCurrentWordIndex(currentWordIndex + foundIndex);
+      try {
+        // 백엔드 API 호출
+        const result = await compareSpeech(transcript, fullScript, currentWordIndex);
+        if (result) {
+          setCurrentWordIndex(result.currentMatchedIndex);
+          
+          // 누락된 부분이 있으면 경고
+          if (result.skippedParts.length > 0) {
+            onShowToast(
+              "warning",
+              `${result.skippedParts.length}개 부분 누락됨: ${result.skippedParts.join(", ").substring(0, 50)}...`
+            );
+          }
+
+          // mismatch가 있으면 경고
+          if (result.mismatchedWords && result.mismatchedWords.length > 0) {
+            const mismatch = result.mismatchedWords[0];
+            onShowToast(
+              "warning",
+              `발음 오류: "${mismatch.spoken}" → "${mismatch.expected}"`
+            );
+          }
+        }
+      } catch (error) {
+        console.error("API call error:", error);
       }
     };
 
@@ -201,7 +222,7 @@ export function LivePrompterScreen({
     return () => {
       recognition.stop();
     };
-  }, [allWords, currentWordIndex, isPlaying]);
+  }, [allWords, currentWordIndex, isPlaying, compareSpeech, onShowToast, scriptParagraphs, lastTranscript]);
 /*
   useEffect(() => {
     if (isPlaying) {
