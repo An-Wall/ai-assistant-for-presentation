@@ -39,6 +39,9 @@ declare global {
 interface LivePrompterScreenProps {
   onShowToast: (type: "info" | "success" | "warning" | "error", message: string) => void;
   script: string;
+  fontSize: number;
+  scrollSpeed: number;
+  onFontSizeChange: (value: number) => void; // 글자 크기를 변경하는 함수를 받음
 }
 
 
@@ -64,10 +67,15 @@ const defaultScriptParagraphs = [
   },
 ];
 
-export function LivePrompterScreen({ onShowToast, script }: LivePrompterScreenProps) {
+export function LivePrompterScreen({ 
+  onShowToast, 
+  script, 
+  fontSize, 
+  scrollSpeed, 
+  onFontSizeChange 
+}: LivePrompterScreenProps)  {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const [fontSize, setFontSize] = useState(32);
   const [isInverted, setIsInverted] = useState(false);
   
   // Real-time dashboard metrics
@@ -682,7 +690,7 @@ export function LivePrompterScreen({ onShowToast, script }: LivePrompterScreenPr
               type="range"
               min="1"
               max="10"
-              defaultValue="5"
+              defaultValue={scrollSpeed}
               className="w-24 accent-[#0064FF]"
               style={{ border: 'none', outline: 'none' }}
             />
@@ -691,7 +699,7 @@ export function LivePrompterScreen({ onShowToast, script }: LivePrompterScreenPr
             <Button
               variant="outline"
               size="icon"
-              onClick={() => setFontSize(Math.max(16, fontSize - 4))}
+              onClick={() => onFontSizeChange(Math.max(16, fontSize - 4))}
             >
               <ZoomOut className="w-4 h-4" />
             </Button>
@@ -699,7 +707,7 @@ export function LivePrompterScreen({ onShowToast, script }: LivePrompterScreenPr
             <Button
               variant="outline"
               size="icon"
-              onClick={() => setFontSize(Math.min(48, fontSize + 4))}
+              onClick={() => onFontSizeChange(Math.min(48, fontSize + 4))}
             >
               <ZoomIn className="w-4 h-4" />
             </Button>
