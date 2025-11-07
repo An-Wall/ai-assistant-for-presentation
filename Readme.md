@@ -11,8 +11,8 @@ git fetch upstream
 # 2. 내 로컬 기본 브랜치(main)로 이동
 git checkout main
 
-# 3. 내 기본 브랜치(main)에 원본의 변경사항 병합하기
-git merge upstream/main
+# 3. 내 현재 브랜치에 원본(upstream/)의 변경사항 병합하기
+git merge upstream/figma
 
 # 4. 최신화된 내용을 내 깃헙(origin)에 올리기
 git push origin main
