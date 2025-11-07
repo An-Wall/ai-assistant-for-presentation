@@ -113,7 +113,7 @@ export default function App() {
       id: Date.now().toString(),
       type,
       message,
-      duration: 3000,
+      duration: 5000,
     };
     setToasts((prev) => [...prev, newToast]);
   };

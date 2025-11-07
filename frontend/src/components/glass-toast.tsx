@@ -19,7 +19,7 @@ export function GlassToast({ toast, onDismiss }: GlassToastProps) {
   const [isLeaving, setIsLeaving] = useState(false);
 
   useEffect(() => {
-    const duration = toast.duration || 3000;
+    const duration = toast.duration || 5000;
     const timer = setTimeout(() => {
       setIsLeaving(true);
       setTimeout(() => onDismiss(toast.id), 300);

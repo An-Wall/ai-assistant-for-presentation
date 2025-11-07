@@ -193,23 +193,7 @@ export function LivePrompterScreen({
         const result = await compareSpeech(transcript, fullScript, currentWordIndex);
         if (result) {
           setCurrentWordIndex(result.currentMatchedIndex);
-          
-          // 누락된 부분이 있으면 경고
-          if (result.skippedParts.length > 0) {
-            onShowToast(
-              "warning",
-              `${result.skippedParts.length}개 부분 누락됨: ${result.skippedParts.join(", ").substring(0, 50)}...`
-            );
-          }
-
-          // mismatch가 있으면 경고
-          if (result.mismatchedWords && result.mismatchedWords.length > 0) {
-            const mismatch = result.mismatchedWords[0];
-            onShowToast(
-              "warning",
-              `발음 오류: "${mismatch.spoken}" → "${mismatch.expected}"`
-            );
-          }
+          // 토스트 메시지는 디버깅 시에만 필요하므로 제거
         }
       } catch (error) {
         console.error("API call error:", error);
