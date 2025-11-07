@@ -1,11 +1,8 @@
 
-  # Real-time Teleprompter UI
 
-  This is a code bundle for Real-time Teleprompter UI. The original project is available at https://www.figma.com/design/x3W67izgX75IJKuYKvfrsK/Real-time-Teleprompter-UI.
+# 프로젝트 문서
 
-  ## Running the code
+문서 전문은 아래 PDF에서 보실 수 있습니다:
+[프로젝트 개요 PDF](SE_Assignment2_G12.pdf)
 
-  Run `npm i` to install the dependencies.
-
-  Run `npm run dev` to start the development server.
-  
+[![PDF 썸네일](screen.png)]
