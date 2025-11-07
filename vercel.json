@@ -1,0 +1,23 @@
+{
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/build",
+  "framework": "vite",
+  "env": {
+    "OPENAI_API_KEY": "@openai_api_key"
+  },
+  "functions": {
+    "api/**/*.ts": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/speech-comparison",
+      "destination": "/api/speech-comparison.ts"
+    },
+    {
+      "source": "/api/llm-regenerate",
+      "destination": "/api/llm-regenerate.ts"
+    }
+  ]
+}
