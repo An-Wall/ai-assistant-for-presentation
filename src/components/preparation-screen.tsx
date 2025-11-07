@@ -14,6 +14,17 @@ interface PreparationScreenProps {
   onNavigate: (screen: string) => void;
   onShowToast: (type: "info" | "success" | "warning" | "error", message: string) => void;
   onScriptUpload: (script: string) => void;
+
+  fontSize: number;
+  scrollSpeed: number;
+  isAutoSlide: boolean;
+  isHighlight: boolean;
+
+  // App.tsx로부터 받을 설정 변경 함수들의 타입을 추가
+  onFontSizeChange: (value: number) => void;
+  onScrollSpeedChange: (value: number) => void;
+  onIsAutoSlideChange: (value: boolean) => void;
+  onIsHighlightChange: (value: boolean) => void;
 }
 
 // Slide-Script Alignment Component
@@ -398,7 +409,19 @@ function SlideScriptAlignment({ onShowToast }: { onShowToast: (type: "info" | "s
   );
 }
 
-export function PreparationScreen({ onNavigate, onShowToast, onScriptUpload }: PreparationScreenProps) {
+export function PreparationScreen({ 
+    onNavigate, 
+    onShowToast, 
+    onScriptUpload,
+    fontSize,
+    scrollSpeed,
+    isAutoSlide,
+    isHighlight,
+    onFontSizeChange,
+    onScrollSpeedChange,
+    onIsAutoSlideChange,
+    onIsHighlightChange
+}: PreparationScreenProps){
   const [uploadProgress, setUploadProgress] = useState(0);
   const [activeTab, setActiveTab] = useState("upload");
   const scriptFileInputRef = useRef<HTMLInputElement>(null);
@@ -408,8 +431,6 @@ export function PreparationScreen({ onNavigate, onShowToast, onScriptUpload }: P
   const [isReferenceFileSelected, setIsReferenceFileSelected] = useState(false);
   const [scriptUploadProgress, setScriptUploadProgress] = useState(85);
   const [referenceUploadProgress, setReferenceUploadProgress] = useState(92);
-  const [fontSize, setFontSize] = useState(32);
-  const [scrollSpeed, setScrollSpeed] = useState(5);
 
   const handleUpload = () => {
     setUploadProgress(0);
@@ -737,7 +758,7 @@ export function PreparationScreen({ onNavigate, onShowToast, onScriptUpload }: P
                       min="1"
                       max="10"
                       value={scrollSpeed}
-                      onChange={(e) => setScrollSpeed(Number(e.target.value))}
+                      onChange={(e) => onScrollSpeedChange(Number(e.target.value))}
                       className="w-full accent-[#0064FF]"
                       style={{ border: 'none', outline: 'none' }}
                     />
@@ -779,7 +800,7 @@ export function PreparationScreen({ onNavigate, onShowToast, onScriptUpload }: P
                   min="16"
                   max="48"
                   value={fontSize}
-                  onChange={(e) => setFontSize(Number(e.target.value))}
+                  onChange={(e) => onFontSizeChange(Number(e.target.value))}
                   className="w-full accent-[#0064FF]"
                   style={{ border: 'none', outline: 'none' }}
                 />

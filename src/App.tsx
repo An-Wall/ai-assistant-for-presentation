@@ -26,19 +26,20 @@ export default function App() {
     "report",
     "settings",
   ];
-  const [currentScreen, setCurrentScreen] =
+  const [currentScreen, setCurrentScreen] = //현재 화면이 뭔지 담고 있는 변수
     useState("dashboard");
 
 
-  const [script, setScript] = useState("");
+  const [script, setScript] = useState(""); // 대본 텍스트 저장 변수
 
 
   const [currentProject, setCurrentProject] =
     useState("2025 신제품 발표");
-  const [micStatus, setMicStatus] = useState<
+
+  const [micStatus, setMicStatus] = useState< //마이크상태 저장 변수 ("active", "muted", "off" 중 하나)
     "active" | "muted" | "off"
   >("active");
-  const [networkStatus, setNetworkStatus] = useState<
+  const [networkStatus, setNetworkStatus] = useState< //네트워크 상태 저장 변수 ("excellent", "good", "poor" 중 하나)
     "excellent" | "good" | "poor"
   >("excellent");
   const [timer, setTimer] = useState("00:00");
@@ -49,6 +50,11 @@ export default function App() {
       return (saved as "light" | "dark" | "auto") || "light";
     },
   );
+    
+  const [fontSize, setFontSize] = useState(32); // 기본 글자 크기
+  const [scrollSpeed, setScrollSpeed] = useState(5);// 스크롤 속도
+  const [isAutoSlide, setIsAutoSlide] = useState(false);// 자동 슬라이드 여부
+  const [isHighlight, setIsHighlight] = useState(true);// 강조 표시 여부
 
   // Theme effect
   useEffect(() => {
@@ -146,11 +152,27 @@ export default function App() {
             onNavigate={setCurrentScreen}
             onShowToast={showToast}
             onScriptUpload={setScript} 
+
+            fontSize={fontSize}
+            scrollSpeed={scrollSpeed}
+            isAutoSlide={isAutoSlide}
+            isHighlight={isHighlight}
+
+            onFontSizeChange={setFontSize}
+            onScrollSpeedChange={setScrollSpeed}
+            onIsAutoSlideChange={setIsAutoSlide}
+            onIsHighlightChange={setIsHighlight}
           />
         );
       case "live":
-        return <LivePrompterScreen onShowToast={showToast} 
-        script={script}/>;
+        return <LivePrompterScreen 
+                  onShowToast={showToast} 
+                  script={script}
+                  // [추가] 설정 값을 props로 전달
+                  fontSize={fontSize}
+                  scrollSpeed={scrollSpeed}
+                  onFontSizeChange={setFontSize}
+               />;
       case "qna":
         return <QnaScreen onShowToast={showToast} />;
       case "report":
@@ -161,6 +183,16 @@ export default function App() {
             onShowToast={showToast}
             theme={theme}
             onThemeChange={setTheme}
+            // [추가] 현재 설정 값들을 props로 전달
+            fontSize={fontSize}
+            scrollSpeed={scrollSpeed}
+            isAutoSlide={isAutoSlide}
+            isHighlight={isHighlight}
+            // [추가] 설정 상태를 변경하는 함수(리모컨)들을 props로 전달
+            onFontSizeChange={setFontSize}
+            onScrollSpeedChange={setScrollSpeed}
+            onIsAutoSlideChange={setIsAutoSlide}
+            onIsHighlightChange={setIsHighlight}
           />
         );
       default:

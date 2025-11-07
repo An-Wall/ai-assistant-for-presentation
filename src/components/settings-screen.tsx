@@ -11,9 +11,30 @@ interface SettingsScreenProps {
   onShowToast: (type: "info" | "success" | "warning" | "error", message: string) => void;
   theme: "light" | "dark" | "auto";
   onThemeChange: (theme: "light" | "dark" | "auto") => void;
+
+  fontSize: number;
+  scrollSpeed: number;
+  isAutoSlide: boolean;
+  isHighlight: boolean;
+  onFontSizeChange: (value: number) => void;
+  onScrollSpeedChange: (value: number) => void;
+  onIsAutoSlideChange: (value: boolean) => void;
+  onIsHighlightChange: (value: boolean) => void;
 }
 
-export function SettingsScreen({ onShowToast, theme, onThemeChange }: SettingsScreenProps) {
+export function SettingsScreen({ 
+  onShowToast, 
+  theme, 
+  onThemeChange,
+  fontSize,
+  scrollSpeed,
+  isAutoSlide,
+  isHighlight,
+  onFontSizeChange,
+  onScrollSpeedChange,
+  onIsAutoSlideChange,
+  onIsHighlightChange
+}: SettingsScreenProps) {
   const handleSave = () => {
     onShowToast("success", "설정이 저장되었습니다");
   };
@@ -117,10 +138,11 @@ export function SettingsScreen({ onShowToast, theme, onThemeChange }: SettingsSc
                     type="range"
                     min="16"
                     max="48"
-                    defaultValue="32"
+                    value={fontSize}
+                    onChange={(e) => onFontSizeChange(Number(e.target.value))} 
                     className="flex-1"
                   />
-                  <span className="w-16 text-center">32px</span>
+                  <span className="w-16 text-center">{fontSize}32px</span>
                 </div>
               </div>
 
@@ -131,7 +153,8 @@ export function SettingsScreen({ onShowToast, theme, onThemeChange }: SettingsSc
                     type="range"
                     min="1"
                     max="10"
-                    defaultValue="5"
+                    value={scrollSpeed} // [수정] defaultValue -> value
+                    onChange={(e) => onScrollSpeedChange(Number(e.target.value))}
                     className="flex-1"
                   />
                   <span className="w-16 text-center">5</span>
@@ -159,7 +182,8 @@ export function SettingsScreen({ onShowToast, theme, onThemeChange }: SettingsSc
                     음성 인식으로 슬라이드를 자동 전환합니다
                   </p>
                 </div>
-                <Switch defaultChecked />
+                <Switch checked={isAutoSlide} // [수정] defaultChecked -> checked
+                  onCheckedChange={onIsAutoSlideChange} /* [수정] onCheckedChange 이벤트 추가*/ />
               </div>
 
               <div className="flex items-center justify-between">
@@ -169,7 +193,9 @@ export function SettingsScreen({ onShowToast, theme, onThemeChange }: SettingsSc
                     진행 중인 문장을 강조 표시합니다
                   </p>
                 </div>
-                <Switch defaultChecked />
+                <Switch checked={isHighlight} // [수정] defaultChecked -> checked
+                  onCheckedChange={onIsHighlightChange} // [수정] onCheckedChange 이벤트 추가
+                   />
               </div>
 
               <div className="flex items-center justify-between">
