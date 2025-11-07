@@ -523,7 +523,7 @@ export function PreparationScreen({ onNavigate, onShowToast, onScriptUpload }: P
                   <div className="mt-4">
                     <Progress value={uploadProgress} />
                     <p className="mt-2 text-center text-muted-foreground">
-                      업로드 중... {uploadProgress}%
+                      {uploadProgress === 100 ? "업로드가 완료되었습니다" : `업로드 중... ${uploadProgress}%`}
                     </p>
                   </div>
                 )}

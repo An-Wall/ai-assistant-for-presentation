@@ -57,13 +57,13 @@ export function GlassToast({ toast, onDismiss }: GlassToastProps) {
     >
       <div className="flex items-start gap-3">
         <div className="shrink-0 mt-0.5">{getIcon()}</div>
-        <p className="flex-1 text-[rgb(255,255,255)]">{toast.message}</p>
+        <p className="flex-1 text-black font-medium">{toast.message || '알림'}</p>
         <button
           onClick={() => {
             setIsLeaving(true);
             setTimeout(() => onDismiss(toast.id), 300);
           }}
-          className="shrink-0 text-gray-500 hover:text-gray-700"
+          className="shrink-0 text-gray-600 hover:text-gray-800"
         >
           <X className="w-4 h-4" />
         </button>
