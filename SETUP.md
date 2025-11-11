@@ -62,7 +62,7 @@ vercel dev
 cd frontend
 npm run dev
 ```
-
+http://localhost:5173 를 통해 테스트 할 수 있습니다.
 프론트엔드는 자동으로 /api/* 요청을 localhost:3000로 프록시합니다.
 
 ## API 엔드포인트
