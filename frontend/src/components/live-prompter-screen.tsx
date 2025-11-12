@@ -6,6 +6,7 @@ import { useApiClient } from "../hooks/useApiClient";
 import {
   Play,
   Pause,
+  Square,
   ChevronLeft,
   ChevronRight,
   ZoomIn,
@@ -90,6 +91,12 @@ export function LivePrompterScreen({
   const [currentSentencePronunciation, setCurrentSentencePronunciation] = useState(92);
   const [isRecognizing, setIsRecognizing] = useState(false);
   const recognitionRef = useRef<CustomSpeechRecognition | null>(null);
+  const isPlayingRef = useRef(isPlaying);
+  const isStoppingRef = useRef(false);
+
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
 
   const [scriptParagraphs, setScriptParagraphs] = useState(defaultScriptParagraphs);
   
@@ -157,19 +164,34 @@ export function LivePrompterScreen({
 
     recognition.onend = () => {
       setIsRecognizing(false);
-      // isPlaying 상태일 때 인식이 끝나면 자동으로 다시 시작
-      if (isPlaying) {
-        recognition.start();
+      // 중지 중이거나 isPlaying이 false면 재시작하지 않음
+      if (!isStoppingRef.current && isPlayingRef.current) {
+        try {
+          recognition.start();
+        } catch (err) {
+          console.error("Restart error:", err);
+        }
       }
+      isStoppingRef.current = false;
     };
 
     recognition.onerror = (event) => {
       console.error("Speech recognition error", event.error);
-      onShowToast("error", `음성 인식 오류: ${event.error}`);
+      // aborted는 정상적인 중지 시 발생하므로 에러 토스트 표시 안함
+      if (event.error !== "aborted" && event.error !== "no-speech") {
+        onShowToast("error", `음성 인식 오류: ${event.error}`);
+      }
+      // aborted 에러 시 인식 중지 플래그 설정
+      if (event.error === "aborted") {
+        isStoppingRef.current = true;
+      }
+      setIsRecognizing(false);
     };
 
     // [핵심] 음성 인식 결과 처리
     recognition.onresult = async (event) => {
+      // 일시정지 상태에서는 이벤트 무시
+      if (!isPlayingRef.current) return;
       let interimTranscript = "";
       let finalTranscript = "";
 
@@ -237,22 +259,74 @@ export function LivePrompterScreen({
     }
 
     if (isPlaying) {
-      // 중지
-      recognition.stop();
+      // 일시정지: 먼저 플래그와 상태를 false로 설정
+      isStoppingRef.current = true;
       setIsPlaying(false);
+      // ref 업데이트 보장
+      await new Promise(resolve => setTimeout(resolve, 50));
+      try {
+        recognition.stop();
+      } catch (err) {
+        console.error("Stop error:", err);
+        isStoppingRef.current = false;
+      }
+      onShowToast("info", "일시정지되었습니다.");
     } else {
-      // 시작 - 마이크 권한 요청
+      // 재개/시작 - 마이크 권한 요청
       try {
         await navigator.mediaDevices.getUserMedia({ audio: true });
-        setCurrentWordIndex(0);
+        isStoppingRef.current = false;
         setIsPlaying(true);
-        recognition.start();
+        // ref 업데이트 보장
+        await new Promise(resolve => setTimeout(resolve, 50));
+        // recognition이 이미 실행 중일 수 있으므로 try-catch로 감싸기
+        try {
+          recognition.start();
+        } catch (err: any) {
+          console.error("Start error:", err);
+          // 이미 시작된 경우 무시
+          if (err.message && !err.message.includes('already started')) {
+            throw err;
+          }
+        }
         onShowToast("info", "음성 인식을 시작합니다.");
       } catch (err) {
+        setIsPlaying(false);
+        isStoppingRef.current = false;
         onShowToast("error", "마이크 접근 권한이 필요합니다.");
         console.error("Mic access error:", err);
       }
     }
+  };
+
+  const handleStop = async () => {
+    const recognition = recognitionRef.current;
+    if (!recognition) {
+      onShowToast("error", "음성 인식을 초기화할 수 없습니다.");
+      return;
+    }
+
+    // 중지: 음성 인식 중지하고 처음으로 돌아가기
+    isStoppingRef.current = true;
+    const wasPlaying = isPlaying;
+    setIsPlaying(false);
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
+    // 재생 중이었을 때만 recognition.stop() 호출
+    if (wasPlaying) {
+      try {
+        recognition.stop();
+      } catch (err) {
+        console.error("Stop error:", err);
+        isStoppingRef.current = false;
+      }
+    } else {
+      // 이미 멈춰있는 경우 플래그만 초기화
+      isStoppingRef.current = false;
+    }
+    
+    setCurrentWordIndex(0);
+    onShowToast("info", "발표가 중지되고 처음으로 돌아갔습니다.");
   };
   // Simulate real-time metrics changes
   useEffect(() => {
@@ -678,6 +752,16 @@ export function LivePrompterScreen({
           >
             {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
             {isPlaying ? "일시정지" : "시작"}
+          </Button>
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={handleStop}
+            className="gap-2"
+            disabled={!isPlaying && currentWordIndex === 0}
+          >
+            <Square className="w-5 h-5 text-red-500" />
+            중지
           </Button>
           <Button
             variant="outline"

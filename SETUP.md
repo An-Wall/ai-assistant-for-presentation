@@ -46,12 +46,24 @@ GEMINI_API_KEY=your-gemini-api-key-here
 
 ### 3. 로컬 개발
 
+서버 실행을 위해 vercel을 설치합니다.
 ```bash
-# 프론트엔드 개발 서버 실행 (포트 3000)
-npm run dev
+# vercel cli 설치
+npm i -g vercel
+```
+백엔드용 터미널과 프론트엔드용 터미널을 각각 실행합니다.
+```bash
+# 백엔드 개발 서버 실행 (포트 3000)
+vercel dev
 ```
 
-프론트엔드는 자동으로 `/api/*` 요청을 localhost:3001로 프록시합니다.
+```bash
+# 프론트엔드 폴더로 이동하여 개발 서버 실행 (포트 5173)
+cd frontend
+npm run dev
+```
+http://localhost:5173 를 통해 테스트 할 수 있습니다.
+프론트엔드는 자동으로 /api/* 요청을 localhost:3000로 프록시합니다.
 
 ## API 엔드포인트
 
@@ -158,9 +170,9 @@ function MyComponent() {
 ✅ 백엔드/프론트엔드 분리 완료
 ✅ 음성 인식 (클라이언트)
 ✅ 음성 vs 원고 비교 (백엔드)
-✅ 누락된 부분 감지 (백엔드)
-✅ 발음 오류 감지 (백엔드)
-✅ LLM API 준비 (미배포)
+❎ 누락된 부분 감지 (백엔드)
+❎ 발음 오류 감지 (백엔드)
+❎ LLM API 준비 (미배포)
 
 ### 예정된 기능
 - [ ] 원고 vs 음성 빨간색 표시 UI
